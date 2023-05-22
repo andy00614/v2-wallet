@@ -1,125 +1,96 @@
-import { statusMap, statusColorMap } from '@/config/map'
-import { Badge, Card, Col, Grid, Metric, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from '@tremor/react'
-import React from 'react'
-const tableData = [
-  {
-    "id": 54,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 74,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:36:44",
-    "updateTime": "2023-05-12 11:36:59"
-  },
-  {
-    "id": 53,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 74,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:32:15",
-    "updateTime": "2023-05-12 11:32:15"
-  },
-  {
-    "id": 52,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 64,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:29:43",
-    "updateTime": "2023-05-12 11:29:58"
-  },
-  {
-    "id": 51,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 46,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:18:52",
-    "updateTime": "2023-05-12 11:19:07"
-  },
-  {
-    "id": 50,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 30,
-    "status": -1,
-    "digestLog": "BusinessException(code=0)",
-    "createTime": "2023-05-12 11:10:19",
-    "updateTime": "2023-05-12 11:10:19"
-  }
-]
+'use client'
+import AddressShow from "@/components/AddressShow"
+import CheckWord from "@/components/CheckWord"
+import { getEkey, getMnemonic, getPublicKey } from "@/request"
+import { TokenManager } from "@/utils/storage"
+import { Button } from "@tremor/react"
+import { useRouter } from "next/navigation"
+import { useCallback, useEffect, useMemo, useState } from "react"
+
+
+const colors = ['#f50', '#2db7f5', '#87d068', '#108ee9', '#7265e6', '#ffbf00', '#00a2ae', '#eb2f96', '#fa8c16', '#7cb305', '#f5222d', '#52c41a'];
 
 
 function Create() {
-  return (
-    <div className='create-wrapper w-full'>
-      <Grid numCols={1} numColsSm={2} numColsLg={3} className="gap-2">
-        <Col numColSpan={2} numColSpanLg={2}>
-          <Card>
-            <Text>Address</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>0x06aae7b6c123c2c310c6f46c9a20d56453a7b21a1</Metric>
-          </Card>
-        </Col>
+  const [mnemonic, setMnemonic] = useState<string[]>([])
+  const [publicKey, setPublicKey] = useState<string>('')
+  const [isRemembered, setIsRemembered] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [eKey, setEkey] = useState<string>('')
+  const router = useRouter()
 
-        <Col numColSpan={2} numColSpanSm={1}>
-          <Card>
-            <Text>BNB</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>0.22</Metric>
-          </Card>
-        </Col>
+  const shouldShowMnemonic = useMemo(() => mnemonic.length > 0, [mnemonic])
 
-        <Col numColSpan={2} numColSpanSm={1}>
-          <Card>
-            <Text>WDT</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>4443.2</Metric>
-          </Card>
-        </Col>
+  const jumpToAccountPage = (publickKey: string) => {
+    router.push(`/account/${publickKey}`)
+  }
 
-        <Col numColSpan={2} numColSpanSm={2}>
-          <Card>
-            <Title>List of Swiss Federal Councillours</Title>
-            <Table className="mt-5">
-              <TableHead>
-                <TableRow>
-                  <TableHeaderCell>Amount</TableHeaderCell>
-                  <TableHeaderCell>Time</TableHeaderCell>
-                  <TableHeaderCell>Status</TableHeaderCell>
-                  <TableHeaderCell>Log</TableHeaderCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tableData.map((item) => {
-                  return (
-                    <TableRow key={item.amount}>
-                      <TableCell>{item.amount}</TableCell>
-                      <TableCell>
-                        <Text>{item.updateTime}</Text>
-                      </TableCell>
-                      <TableCell>
-                        {/* @ts-ignore */}
-                        <Badge color={statusColorMap[item.status]}>
-                          {statusMap[String(item.status)]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {item.digestLog}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })
-                }
-              </TableBody>
-            </Table>
-          </Card>
-        </Col>
-      </Grid>
-    </div>
-  )
+  const generatorAddress = useCallback(async () => {
+    const mnemonic = await getMnemonic()
+    const [publicKey, eKey] = await Promise.all([getPublicKey(mnemonic), getEkey(mnemonic)])
+    setMnemonic(mnemonic)
+    setPublicKey(publicKey)
+    setEkey(eKey)
+  }, [])
+
+  useEffect(() => {
+    (async function () {
+      setLoading(true)
+      await generatorAddress()
+      // message.success('create success!')
+      setLoading(false)
+    })()
+  }, [generatorAddress])
+
+
+  const doSomeCheck = () => {
+    setIsRemembered(true)
+  }
+
+  const onCheckSuccess = async () => {
+    // message.success('mnemonic is right!')
+    const tokenManager = TokenManager.getInstance()
+    // await createAddress({ address: publicKey, encryptKey: eKey, balance: 0 })
+    tokenManager.setToken(eKey)
+    tokenManager.setPublickKey(publicKey)
+    jumpToAccountPage(publicKey)
+  }
+
+  const onCheckFail = (word: string[]) => {
+    // message.warning('mnemonic is wrong!')
+    // 需要重试助记词
+    setIsRemembered(false)
+  }
+
+  return <section className="w-full">
+    <AddressShow address={publicKey} />
+    {shouldShowMnemonic && <section className="mt-4">
+      {/* 展示助记词 */}
+      {
+        isRemembered ?
+          <>
+            <CheckWord word={mnemonic} onFail={onCheckFail} onSuccess={onCheckSuccess} />
+            <Button className="mt-4" onClick={() => setIsRemembered(false)}>forget, retry</Button>
+          </>
+          :
+          <>
+            <div className="p-4 bg-indigo-100 border border-indigo-300 rounded-md">
+              <div className="flex flex-wrap flex-row">
+                {mnemonic.map((word, index) => (
+                  <div key={index} className="w-1/4 mb-4 px-2">
+                    <Button className="min-w-full text-center mt-2 mr-2">
+                      {word}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Button className="mt-4" onClick={doSomeCheck}>I Remebered</Button>
+          </>
+      }
+
+    </section>}
+  </section>
 }
 
 export default Create

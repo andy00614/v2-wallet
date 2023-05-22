@@ -19,3 +19,17 @@ export async function getOperationRecord(address: string) {
   return data.records
 }
 
+export const getPublicKey = async (mnemonic: string[]) => {
+  const { data } = await request<{ data: string }>('/blockchain/address', 'POST', { paramTypeEnum: 'MNEMONIC', mnemonic })
+  return data
+}
+
+export const getMnemonic = async () => {
+  const { data } = await request<{ data: string[] }>('/blockchain/mnemonic', 'GET')
+  return data
+}
+
+export const getEkey = async (key: string[]) => {
+  const { data } = await request<{ data: string }>('/blockchain/encryptKey', 'POST', { "paramTypeEnum": "MNEMONIC", mnemonic: key })
+  return data
+}
