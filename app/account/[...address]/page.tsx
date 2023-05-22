@@ -1,65 +1,15 @@
 import { statusMap, statusColorMap } from '@/config/map'
+import { getAddress, getOperationRecord } from '@/request'
 import { Badge, Card, Col, Grid, Metric, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from '@tremor/react'
-
-const tableData = [
-  {
-    "id": 54,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 74,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:36:44",
-    "updateTime": "2023-05-12 11:36:59"
-  },
-  {
-    "id": 53,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 74,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:32:15",
-    "updateTime": "2023-05-12 11:32:15"
-  },
-  {
-    "id": 52,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 64,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:29:43",
-    "updateTime": "2023-05-12 11:29:58"
-  },
-  {
-    "id": 51,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 46,
-    "status": 2,
-    "digestLog": null,
-    "createTime": "2023-05-12 11:18:52",
-    "updateTime": "2023-05-12 11:19:07"
-  },
-  {
-    "id": 50,
-    "type": 0,
-    "address": "0x4b3a81756fa0771c8efbd28219afda5f2a0e2149",
-    "amount": 30,
-    "status": -1,
-    "digestLog": "BusinessException(code=0)",
-    "createTime": "2023-05-12 11:10:19",
-    "updateTime": "2023-05-12 11:10:19"
-  }
-]
 
 interface IProps {
   params: { address: string[] }
 }
 
 async function Create({ params }: IProps) {
-  console.log(params.address[0])
+  const address = params.address[0]
+  const [data, records] = await Promise.all([getAddress(address), getOperationRecord(address)])
+
   return (
     <div className='create-wrapper w-full'>
       <Grid numCols={1} numColsSm={2} numColsLg={3} className="gap-2">
@@ -73,14 +23,14 @@ async function Create({ params }: IProps) {
         <Col numColSpan={2} numColSpanSm={1}>
           <Card>
             <Text>BNB</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>0.22</Metric>
+            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{data.bnbBalance}</Metric>
           </Card>
         </Col>
 
         <Col numColSpan={2} numColSpanSm={1}>
           <Card>
             <Text>WDT</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>4443.2</Metric>
+            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{data.balance}</Metric>
           </Card>
         </Col>
 
@@ -97,7 +47,7 @@ async function Create({ params }: IProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tableData.map((item) => {
+                {records.map((item) => {
                   return (
                     <TableRow key={item.amount}>
                       <TableCell>{item.amount}</TableCell>

@@ -22,7 +22,7 @@ const Nav = () => {
   const router = useRouter();
   const isLogin = false;
 
-  const handleCreate = (e) => {
+  const handleCreate = (e: any) => {
     e.preventDefault();
     router.push('/create');
   }
