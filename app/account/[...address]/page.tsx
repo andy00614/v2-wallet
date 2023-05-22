@@ -1,6 +1,6 @@
 import { statusMap, statusColorMap } from '@/config/map'
 import { Badge, Card, Col, Grid, Metric, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from '@tremor/react'
-import React from 'react'
+
 const tableData = [
   {
     "id": 54,
@@ -54,8 +54,12 @@ const tableData = [
   }
 ]
 
+interface IProps {
+  params: { address: string[] }
+}
 
-function Create() {
+async function Create({ params }: IProps) {
+  console.log(params.address[0])
   return (
     <div className='create-wrapper w-full'>
       <Grid numCols={1} numColsSm={2} numColsLg={3} className="gap-2">
