@@ -1,9 +1,10 @@
 'use client'
 import AddressShow from "@/components/AddressShow"
 import CheckWord from "@/components/CheckWord"
+import { layoutOfMnemonic } from "@/config/map"
 import { getEkey, getMnemonic, getPublicKey } from "@/request"
 import { TokenManager } from "@/utils/storage"
-import { Button } from "@tremor/react"
+import { Box, Button, Card, CardBody, SimpleGrid, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
@@ -18,6 +19,7 @@ function Create() {
   const [loading, setLoading] = useState<boolean>(false)
   const [eKey, setEkey] = useState<string>('')
   const router = useRouter()
+  const toast = useToast()
 
   const shouldShowMnemonic = useMemo(() => mnemonic.length > 0, [mnemonic])
 
@@ -28,7 +30,7 @@ function Create() {
   const generatorAddress = useCallback(async () => {
     const mnemonic = await getMnemonic()
     const [publicKey, eKey] = await Promise.all([getPublicKey(mnemonic), getEkey(mnemonic)])
-    setMnemonic(mnemonic)
+    setMnemonic(mnemonic.slice(0, 2))
     setPublicKey(publicKey)
     setEkey(eKey)
   }, [])
@@ -48,17 +50,27 @@ function Create() {
   }
 
   const onCheckSuccess = async () => {
-    // message.success('mnemonic is right!')
+    toast({
+      title: 'Mnemonic is right!',
+      description: "Please wait a moment",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    })
     const tokenManager = TokenManager.getInstance()
-    // await createAddress({ address: publicKey, encryptKey: eKey, balance: 0 })
     tokenManager.setToken(eKey)
     tokenManager.setPublickKey(publicKey)
     jumpToAccountPage(publicKey)
   }
 
-  const onCheckFail = (word: string[]) => {
-    // message.warning('mnemonic is wrong!')
-    // 需要重试助记词
+  const onCheckFail = () => {
+    toast({
+      title: 'Mnemonic is wrong!',
+      description: "Please check your mnemonic",
+      status: "warning",
+      duration: 2000,
+      isClosable: true,
+    })
     setIsRemembered(false)
   }
 
@@ -68,23 +80,23 @@ function Create() {
       {/* 展示助记词 */}
       {
         isRemembered ?
-          <>
+          <div className="check-div w-full">
             <CheckWord word={mnemonic} onFail={onCheckFail} onSuccess={onCheckSuccess} />
             <Button className="mt-4" onClick={() => setIsRemembered(false)}>forget, retry</Button>
-          </>
+          </div>
           :
           <>
-            <div className="p-4 bg-indigo-100 border border-indigo-300 rounded-md">
-              <div className="flex flex-wrap flex-row">
-                {mnemonic.map((word, index) => (
-                  <div key={index} className="w-1/4 mb-4 px-2">
-                    <Button className="min-w-full text-center mt-2 mr-2">
+            <Card>
+              <CardBody>
+                <SimpleGrid columns={layoutOfMnemonic} spacing={10}>
+                  {mnemonic.map((word, index) => (
+                    <Button key={index} size="sm" colorScheme="blue">
                       {word}
                     </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  ))}
+                </SimpleGrid>
+              </CardBody>
+            </Card>
             <Button className="mt-4" onClick={doSomeCheck}>I Remebered</Button>
           </>
       }

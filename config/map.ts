@@ -9,3 +9,5 @@ export const statusColorMap: Record<string, string> = {
   '2': 'emerald',
   '-1': 'red'
 }
+
+export const layoutOfMnemonic = { base: 3, sm: 3, md: 4, lg: 4 }

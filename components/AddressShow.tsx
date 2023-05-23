@@ -1,4 +1,4 @@
-import { Card, Metric, Text } from '@tremor/react'
+import { Box, Card, CardBody, CardHeader, Heading, Text } from '@chakra-ui/react'
 import React from 'react'
 
 interface IProps {
@@ -7,8 +7,16 @@ interface IProps {
 function AddressShow({ address }: IProps) {
   return (
     <Card>
-      <Text>Address</Text>
-      <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{address}</Metric>
+      <CardBody>
+        <Box>
+          <Heading size='xs' >
+            Public Address
+          </Heading>
+          <Text pt='2' fontSize='sm'>
+            {address}
+          </Text>
+        </Box>
+      </CardBody>
     </Card>
   )
 }

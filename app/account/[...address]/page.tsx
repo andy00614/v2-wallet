@@ -1,14 +1,51 @@
+'use client'
 import { statusMap, statusColorMap } from '@/config/map'
-import { getAddress, getOperationRecord } from '@/request'
+import { Wallet, getAddress, getOperationRecord } from '@/request'
+import { useToast } from '@chakra-ui/react'
 import { Badge, Card, Col, Grid, Metric, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from '@tremor/react'
+import { useEffect, useState } from 'react'
 
 interface IProps {
   params: { address: string[] }
 }
 
-async function Create({ params }: IProps) {
-  const address = params.address[0]
-  const [data, records] = await Promise.all([getAddress(address), getOperationRecord(address)])
+function Create({ params }: IProps) {
+  const publicKey = params.address[0]
+  // const [data, records] = await Promise.all([getAddress(address), getOperationRecord(address)])
+  const [data, setData] = useState<Partial<Wallet>>({})
+  const [records, setRecords] = useState<any[]>([])
+  const updateData = async () => {
+    const [data, recordsData] = await Promise.all([getAddress(publicKey), getOperationRecord(publicKey)])
+    setData(data)
+    setRecords(recordsData)
+  }
+  const toaster = useToast()
+
+  const handleCopyAddress = () => {
+    toaster({
+      title: 'Address Copied',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    })
+    navigator.clipboard.writeText(publicKey)
+  }
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // 当页面从其他页面切换回来时，执行您的代码
+        updateData()
+      }
+    };
+    if (publicKey) {
+      updateData()
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [])
 
   return (
     <div className='create-wrapper w-full'>
@@ -16,7 +53,7 @@ async function Create({ params }: IProps) {
         <Col numColSpan={2} numColSpanLg={2}>
           <Card>
             <Text>Address</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>0x06aae7b6c123c2c310c6f46c9a20d56453a7b21a1</Metric>
+            <Metric onClick={handleCopyAddress} className='cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap'>{publicKey}</Metric>
           </Card>
         </Col>
 
@@ -36,7 +73,7 @@ async function Create({ params }: IProps) {
 
         <Col numColSpan={2} numColSpanSm={2}>
           <Card>
-            <Title>List of Swiss Federal Councillours</Title>
+            <Title>Transaction History</Title>
             <Table className="mt-5">
               <TableHead>
                 <TableRow>

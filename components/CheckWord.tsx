@@ -1,5 +1,6 @@
 'use client'
-import { Button } from "@tremor/react";
+import { layoutOfMnemonic } from "@/config/map";
+import { Button, Card, CardBody, SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 interface CheckWordProps {
@@ -40,30 +41,29 @@ const CheckWord: React.FC<CheckWordProps> = ({ word, onFail, onSuccess }) => {
 
   const WordWrapper = (words: string[], type: "from" | "to") => {
     const handleClickFn = type === "from" ? clickRandomWord : clickSelectWord
-    const className = type === "from" ? "w-full p-4 bg-indigo-100 border border-indigo-300 rounded-md" : "w-full p-4 bg-orange-100 border border-orange-300 rounded-md"
     if (words.length === 0) {
       return <></>
     }
     return (
       <>
-        <section className={className} style={{ 'minHeight': '192px' }}>
-          <div className="flex flex-wrap flex-row">
-            {words.map((word, index) => (
-              <div key={index} className="w-1/3 mb-2 px-2">
-                <Button className="min-w-full" onClick={() => handleClickFn(index)}>
+        <Card className="w-full">
+          <CardBody>
+            <SimpleGrid columns={layoutOfMnemonic} spacing={10}>
+              {words.map((word, index) => (
+                <Button key={index} colorScheme={type === 'to' ? "messenger" : "gray"} className="min-w-full" onClick={() => handleClickFn(index)}>
                   {word}
                 </Button>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </SimpleGrid>
+          </CardBody>
+        </Card>
       </>
     )
   }
 
   return <>
-    <div className="flex justify-center items-center">
-      <div className="flex flex-col items-center border border-gray-300 rounded-lg">
+    <div className="flex justify-center items-center w-full">
+      <div className="flex flex-col items-center border border-gray-300 rounded-lg w-full p-4">
         {WordWrapper(randomWord, "from")}
         <div className="my-4">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 25" width="50" height="25">

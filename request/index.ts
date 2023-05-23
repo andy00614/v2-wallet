@@ -1,6 +1,6 @@
 import { request } from "./utils"
 
-interface Wallet {
+export interface Wallet {
   id: number;
   address: string;
   balance: string;
