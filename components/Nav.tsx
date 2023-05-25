@@ -1,12 +1,10 @@
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { Button } from "@chakra-ui/react";
+import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 
-
-const Avatar = () => {
+const AV = () => {
   return <Image
     src="/vv.png"
     width={36}
@@ -18,9 +16,27 @@ const Avatar = () => {
   />
 }
 
+const Avatar = () => {
+  return <Menu>
+    <MenuButton as='button'>
+      <AV />
+    </MenuButton>
+    <MenuList>
+      <MenuItem minH='48px'>
+        <span>Fluffybuns the Destroyer</span>
+      </MenuItem>
+      <MenuItem minH='40px'>
+        <span>Simon the pensive</span>
+      </MenuItem>
+    </MenuList>
+  </Menu>
+}
+
 const Nav = () => {
   const router = useRouter();
-  const isLogin = false;
+  const isLogin = localStorage.getItem('publicKey');
+
+  console.log('isLogin', isLogin);
 
   const handleCreate = (e: any) => {
     e.preventDefault();
@@ -45,8 +61,8 @@ const Nav = () => {
         <div className='flex gap-3 md:gap-5 flex-center'>
           {/* <Button variant="primary" color="purple" size="xs" onClick={handleCreate}>Create Wallet</Button>
           <Button variant="secondary" color="purple" size="xs">Sign in</Button> */}
-          <Button onClick={handleCreate} colorScheme="purple" size="sm">Create Wallet</Button>
-          <Button variant='outline' colorScheme="purple" size="sm">Sign in</Button>
+          {!isLogin && <Button onClick={handleCreate} colorScheme="purple" size="sm">Create account</Button>}
+          <Button variant='outline' colorScheme="purple" size="sm">Import account</Button>
           <Avatar />
         </div>
       </div>
