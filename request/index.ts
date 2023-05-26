@@ -40,3 +40,16 @@ export const getEkey = async (key: string[]) => {
   console.log({ decryptEkey })
   return decryptEkey
 }
+
+export const privateKey2PublickKey = async (privateKey: string) => {
+  const privateKeyEncrypt = encrypt(privateKey)
+  const { data } = await request<{ data: string }>('/blockchain/address', 'POST', { paramTypeEnum: 'PRIVATE_KEY', privateKey: privateKeyEncrypt })
+  return data
+}
+
+export const getEkeyFromPrivateKey = async (privateKey: string) => {
+  const privateKeyEncrypt = encrypt(privateKey)
+  const { data } = await request<{ data: string }>('/blockchain/encryptKey', 'POST', { paramTypeEnum: 'PRIVATE_KEY', privateKey: privateKeyEncrypt })
+  const decryptEkey = decrypt(data as any as string)
+  return decryptEkey
+}

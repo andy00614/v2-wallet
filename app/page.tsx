@@ -1,5 +1,4 @@
 'use client'
-import { Badge, Box, Button, Image } from '@chakra-ui/react'
 import React from 'react'
 
 import dynamic from 'next/dynamic';

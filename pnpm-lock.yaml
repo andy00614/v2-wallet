@@ -17,6 +17,7 @@ specifiers:
   next: 13.4.3
   postcss: 8.4.23
   react: 18.2.0
+  react-confetti: ^6.1.0
   react-dom: 18.2.0
   tailwindcss: 3.3.2
   typescript: 5.0.4
@@ -38,6 +39,7 @@ dependencies:
   next: 13.4.3_biqbaboplfbrettd7655fr4n2y
   postcss: 8.4.23
   react: 18.2.0
+  react-confetti: 6.1.0_react@18.2.0
   react-dom: 18.2.0_react@18.2.0
   tailwindcss: 3.3.2
   typescript: 5.0.4
@@ -2526,6 +2528,16 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-confetti/6.1.0_react@18.2.0:
+    resolution: {integrity: sha512-7Ypx4vz0+g8ECVxr88W9zhcQpbeujJAVqL14ZnXJ3I23mOI9/oBVTQ3dkJhUmB0D6XOtCZEM6N0Gm9PMngkORw==}
+    engines: {node: '>=10.18'}
+    peerDependencies:
+      react: ^16.3.0 || ^17.0.1 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      tween-functions: 1.2.0
+    dev: false
+
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -2905,6 +2917,10 @@ packages:
 
   /tslib/2.5.2:
     resolution: {integrity: sha512-5svOrSA2w3iGFDs1HibEVBGbDrAY82bFQ3HZ3ixB+88nsbsWQoKqDRb5UBYAUPEzbBn6dAp5gRNXglySbx1MlA==}
+    dev: false
+
+  /tween-functions/1.2.0:
+    resolution: {integrity: sha512-PZBtLYcCLtEcjL14Fzb1gSxPBeL7nWvGhO5ZFPGqziCcr8uvHp0NDmdjBchp6KHL+tExcg0m3NISmKxhU394dA==}
     dev: false
 
   /typescript/5.0.4:

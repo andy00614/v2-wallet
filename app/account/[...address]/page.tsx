@@ -1,6 +1,7 @@
 'use client'
 import { statusMap, statusColorMap } from '@/config/map'
 import { Wallet, getAddress, getOperationRecord } from '@/request'
+import { TokenManager } from '@/utils/storage'
 import { useToast } from '@chakra-ui/react'
 import { Badge, Card, Col, Grid, Metric, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from '@tremor/react'
 import { useEffect, useState } from 'react'
@@ -11,7 +12,6 @@ interface IProps {
 
 function Create({ params }: IProps) {
   const publicKey = params.address[0]
-  // const [data, records] = await Promise.all([getAddress(address), getOperationRecord(address)])
   const [data, setData] = useState<Partial<Wallet>>({})
   const [records, setRecords] = useState<any[]>([])
   const updateData = async () => {
@@ -41,6 +41,8 @@ function Create({ params }: IProps) {
     if (publicKey) {
       updateData()
       document.addEventListener('visibilitychange', handleVisibilityChange);
+      const tokenManager = TokenManager.getInstance()
+      tokenManager.setPublickKey(publicKey)
     }
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
