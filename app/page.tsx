@@ -1,17 +1,10 @@
-'use client'
 import React from 'react'
-
-import dynamic from 'next/dynamic';
-
-const HomePageBannerDynamic = dynamic(
-  () => import('./HomePageBanner'),
-  { ssr: false }
-);
+import HomePageBanner from './HomePageBanner';
 
 function Home() {
   return (
     <div>
-      <HomePageBannerDynamic />
+      <HomePageBanner />
     </div>
   )
 }

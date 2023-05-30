@@ -3,10 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from 'next/navigation';
 import { Button, Input, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure, useToast } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { getEkeyFromPrivateKey, privateKey2PublickKey } from "@/request";
 import { TokenManager } from "@/utils/storage";
 import { isAuthorizationPage } from "@/utils/route";
+import { AuthContext } from "@/app/auth-provider";
 
 const AV = () => {
   return <Image
@@ -14,7 +15,6 @@ const AV = () => {
     width={36}
     height={36}
     style={{ width: 36, height: 36, borderRadius: '50%' }}
-    // className='rounded-full'
     alt='profile'
     quality={100}
   />
@@ -43,19 +43,11 @@ const Avatar = ({ logout }: { logout?: () => void }) => {
 
 const Nav = () => {
   const router = useRouter();
-  const tokenManger = TokenManager.getInstance();
-  const [isLogin, setIsLogin] = useState(Boolean(tokenManger.getPublicKey()));
   const { isOpen, onOpen, onClose } = useDisclosure()
   const inputRef = useRef<HTMLInputElement>(null)
   const toast = useToast()
   const pathName = usePathname()
-
-  useEffect(() => {
-    setTimeout(() => {
-      const res = Boolean(tokenManger.getPublicKey())
-      setIsLogin(res)
-    }, 200);
-  }, [pathName])
+  const { isAuthenticated, logout } = useContext(AuthContext);
 
   const handleCreate = (e: any) => {
     e.preventDefault();
@@ -63,7 +55,6 @@ const Nav = () => {
       let path = window.location.pathname; // "/authorization"
       let queryString = window.location.search;
       const redirectUrl = encodeURIComponent(`${path}${queryString}`);
-      console.log({ redirectUrl: `${path}${queryString}` })
       router.push(`/create?redirectUrl=${redirectUrl}`);
     } else {
       router.push('/create');
@@ -118,18 +109,16 @@ const Nav = () => {
       {/* Desktop Navigation */}
       <div className='sm:flex hidden'>
         <div className='flex gap-3 md:gap-5 flex-center'>
-          {/* <Button variant="primary" color="purple" size="xs" onClick={handleCreate}>Create Wallet</Button>
-          <Button variant="secondary" color="purple" size="xs">Sign in</Button> */}
-          {!isLogin && <Button onClick={handleCreate} colorScheme="purple" size="sm">Create account</Button>}
+          {!isAuthenticated && <Button onClick={handleCreate} colorScheme="purple" size="sm">Create account</Button>}
           <Button variant='outline' colorScheme="purple" size="sm" onClick={handleImport}>Import account</Button>
-          {isLogin && <Avatar logout={() => setIsLogin(false)} />}
+          {isAuthenticated && <Avatar logout={logout} />}
         </div>
       </div>
 
       {/* Mobile Navigation */}
       <div className='sm:hidden flex relative'>
         <div className='flex'>
-          {isLogin && <Avatar logout={() => setIsLogin(false)} />}
+          {isAuthenticated && <Avatar logout={logout} />}
         </div>
       </div>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>

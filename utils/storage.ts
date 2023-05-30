@@ -14,27 +14,39 @@ export class TokenManager {
   }
 
   setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.tokenKey, token);
+    }
   }
 
   removeToken(): void {
-    localStorage.removeItem(this.tokenKey);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.tokenKey);
+    }
   }
 
   removePublicKey(): void {
-    localStorage.removeItem('publicKey');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('publicKey');
+    }
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+  getToken(): string | null | undefined {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(this.tokenKey);
+    }
   }
 
   setPublickKey(publicKey: string): void {
-    localStorage.setItem('publicKey', publicKey);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('publicKey', publicKey);
+    }
   }
 
-  getPublicKey(): string | null {
-    return localStorage.getItem('publicKey');
+  getPublicKey(): string | null | undefined {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('publicKey');
+    }
   }
 
 }

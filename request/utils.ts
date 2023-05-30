@@ -1,4 +1,5 @@
 import { encrypt } from "@/utils/encrypt";
+import { TokenManager } from "@/utils/storage";
 import axios, { AxiosRequestConfig } from "axios";
 
 const baseURL = 'http://8.219.157.52:8080'
@@ -11,10 +12,8 @@ export const request = async <T>(
   // @ts-ignore
 ): Promise<T> => {
   const completeUrl = url.includes('/root') ? url.replace('/root', '') : `${baseURL}${url}`
-  console.log(`${localStorage.getItem('token')}_${Date.now()}`)
-  // const encryptAuthorization = encryptLong(`${localStorage.getItem('token')}_${Date.now()}`)
-  const encryptAuthorization = encrypt(`${localStorage.getItem('token')}_${Date.now()}`)
-  console.log({ encryptAuthorization })
+  const encryptAuthorization = await encrypt(`${TokenManager.getInstance().getToken()}_${Date.now()}`)
+
   try {
     const headerWithAuth = {
       ...headers,

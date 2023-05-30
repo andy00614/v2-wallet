@@ -3,6 +3,7 @@ import '@/styles/globals.css'
 import Navbar from '@/components/Nav';
 import { Providers } from './providers';
 import Footer from './Footer';
+import { AuthProvider } from './auth-provider';
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -18,16 +19,18 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     <html lang='en'>
       <body>
         <Providers>
-          <div className='main'>
-            <div className='gradient' />
-          </div>
-          <div className='app min-h-screen flex flex-col'>
-            <Navbar />
-            <main className='flex-grow w-full'>
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <AuthProvider>
+            <div className='main'>
+              <div className='gradient' />
+            </div>
+            <div className='app min-h-screen flex flex-col'>
+              <Navbar />
+              <main className='flex-grow w-full'>
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

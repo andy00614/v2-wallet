@@ -1,17 +1,16 @@
 'use client'
-import AddressShow from "@/components/AddressShow"
 import CheckWord from "@/components/CheckWord"
 import PasswordSetter from "@/components/SetPassword"
 import CreateStep from "@/components/Step"
 import { layoutOfMnemonic } from "@/config/map"
 import { steps } from "@/config/step"
 import { getEkey, getMnemonic, getPublicKey } from "@/request"
-import { authorizationKey, authorizationRouteName } from "@/utils/route"
-import { TokenManager } from "@/utils/storage"
-import { Box, Button, Card, CardBody, Center, Heading, SimpleGrid, Text, useSteps, useToast } from "@chakra-ui/react"
+import { authorizationKey } from "@/utils/route"
+import { Button, Card, CardBody, Center, Heading, SimpleGrid, Text, useSteps, useToast } from "@chakra-ui/react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import Confetti from 'react-confetti';
+import { AuthContext } from "../auth-provider"
 
 
 
@@ -22,30 +21,17 @@ function Create() {
   const [mnemonic, setMnemonic] = useState<string[]>([])
   const [publicKey, setPublicKey] = useState<string>('')
   const [isRemembered, setIsRemembered] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
   const [eKey, setEkey] = useState<string>('')
   const router = useRouter()
   const toast = useToast()
   const parmas = useSearchParams()
+  const auth = useContext(AuthContext)
   const { activeStep, goToNext, goToPrevious } = useSteps({
     index: 1,
     count: steps.length,
   })
-  const [celebrate, setCelebrate] = useState(false);
   const [isFinish, setIsFinish] = useState(false);
 
-  const celebrating = () => {
-    // Do some operation, and set celebrate to true when it's successful.
-    setCelebrate(true);
-
-    // After a certain time period, stop the confetti
-    setTimeout(() => {
-      setCelebrate(false);
-    }, 5000);
-  };
-
-
-  console.log(activeStep === 3)
 
   const shouldShowMnemonic = useMemo(() => mnemonic.length > 0, [mnemonic])
 
@@ -62,8 +48,6 @@ function Create() {
   const generatorAddress = useCallback(async () => {
     const mnemonic = await getMnemonic()
     const eKey = await getEkey(mnemonic);
-    const tokenManager = TokenManager.getInstance()
-    tokenManager.setToken(eKey)
     const publicKey = await getPublicKey(mnemonic);
     setMnemonic(mnemonic.slice(0, 2))
     setPublicKey(publicKey)
@@ -72,10 +56,7 @@ function Create() {
 
   useEffect(() => {
     (async function () {
-      setLoading(true)
       await generatorAddress()
-      // message.success('create success!')
-      setLoading(false)
     })()
   }, [generatorAddress])
 
@@ -93,9 +74,7 @@ function Create() {
       duration: 2000,
       isClosable: true,
     })
-    const tokenManager = TokenManager.getInstance()
-    tokenManager.setToken(eKey)
-    tokenManager.setPublickKey(publicKey)
+    auth.login(eKey, publicKey)
     jumpToAccountPage(publicKey)
   }
 
