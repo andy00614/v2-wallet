@@ -2,7 +2,7 @@
 import CheckWord from "@/components/CheckWord"
 import PasswordSetter from "@/components/SetPassword"
 import CreateStep from "@/components/Step"
-import { layoutOfMnemonic } from "@/config/map"
+import { createBtnSize, layoutOfMnemonic, layoutOfSpacing } from "@/config/map"
 import { steps } from "@/config/step"
 import { getEkeyFromMnemonic, getMnemonic, getPublicKey } from "@/request"
 import { authorizationKey } from "@/utils/route"
@@ -89,11 +89,10 @@ function Create() {
   }
 
   const onCheckFail = () => {
+
     toast({
-      title: 'Mnemonic is wrong!',
-      description: "Please check your mnemonic",
-      status: "warning",
-      duration: 2000,
+      title: `Mnemonic is wrong!`,
+      variant: 'subtle',
       isClosable: true,
     })
     goToPrevious()
@@ -103,33 +102,74 @@ function Create() {
   const Mnemonic = () => {
     return <>{
       isRemembered ?
-        <div className="check-div w-full">
+        <>
           <CheckWord word={mnemonic} onFail={onCheckFail} onSuccess={onCheckSuccess} />
-          <Button className="mt-4" onClick={
+          <Button size={["sm", "md"]} className='mt-4' onClick={
             () => {
               setIsRemembered(false)
               goToPrevious()
             }
-          } colorScheme="orange" >forget, retry</Button>
-        </div>
+          } colorScheme="gray" >forget, retry</Button>
+        </>
         :
         <>
           <Card>
             <CardBody>
-              <SimpleGrid columns={layoutOfMnemonic} spacing={10}>
+              <SimpleGrid columns={layoutOfMnemonic} spacing={layoutOfSpacing}>
                 {mnemonic.map((word, index) => (
-                  <Button key={index} size="sm" colorScheme="blue">
+                  <Button key={index} size={createBtnSize} colorScheme="blue">
                     {word}
                   </Button>
                 ))}
               </SimpleGrid>
             </CardBody>
           </Card>
-          <Button className='mt-4' onClick={doSomeCheck} colorScheme="teal" bgGradient="linear(to-r, teal.500,green.500)">I Remembered</Button>
+          <Button size={["sm", "md"]} className='mt-4' onClick={doSomeCheck} colorScheme="teal" bgGradient="linear(to-r, teal.500,green.500)">I Remembered</Button>
         </>
     }
     </>
   }
+
+  const Congraduation = () => {
+    return <Center flexDirection="column">
+      <Heading
+        mb="2rem"
+        fontSize="4xl"
+        fontWeight="bold"
+        css={{
+          background: "linear-gradient(to right, red , yellow)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent"
+        }}
+      >
+        Congratulations!
+      </Heading>
+      <Text
+        mb="2rem"
+        fontSize="3xl"
+        fontWeight="bold"
+        css={{
+          background: "linear-gradient(to right, blue , green)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent"
+        }}
+      >
+        You have successfully created your wallet.
+      </Text>
+      <Button
+        onClick={gotoWallet}
+        background="linear-gradient(to right, #4FC3F7, #9575CD)"
+        color="white"
+        _hover={{
+          background: "linear-gradient(to right, #9575CD, #4FC3F7)",
+        }}
+      >
+        Go to Wallet
+      </Button>
+      <Confetti />
+    </Center>
+  }
+
 
   const finish = () => {
     setIsFinish(true)
@@ -153,45 +193,7 @@ function Create() {
             {activeStep === 3 && <PasswordSetter callback={finish} />}
           </section>
         </> :
-        <>
-          <Center flexDirection="column">
-            <Heading
-              mb="2rem"
-              fontSize="4xl"
-              fontWeight="bold"
-              css={{
-                background: "linear-gradient(to right, red , yellow)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
-              }}
-            >
-              Congratulations!
-            </Heading>
-            <Text
-              mb="2rem"
-              fontSize="3xl"
-              fontWeight="bold"
-              css={{
-                background: "linear-gradient(to right, blue , green)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
-              }}
-            >
-              You have successfully created your wallet.
-            </Text>
-            <Button
-              onClick={gotoWallet}
-              background="linear-gradient(to right, #4FC3F7, #9575CD)"
-              color="white"
-              _hover={{
-                background: "linear-gradient(to right, #9575CD, #4FC3F7)",
-              }}
-            >
-              Go to Wallet
-            </Button>
-            <Confetti />
-          </Center>
-        </>
+        <Congraduation />
     }
 
 

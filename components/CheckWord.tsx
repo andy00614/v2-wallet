@@ -1,7 +1,8 @@
 'use client'
-import { layoutOfMnemonic } from "@/config/map";
+import { createBtnSize, layoutOfMnemonic, layoutOfSpacing } from "@/config/map";
 import { Button, Card, CardBody, SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { TbArrowsTransferDown } from "react-icons/tb";
 
 interface CheckWordProps {
   word: string[];
@@ -48,9 +49,9 @@ const CheckWord: React.FC<CheckWordProps> = ({ word, onFail, onSuccess }) => {
       <>
         <Card className="w-full">
           <CardBody>
-            <SimpleGrid columns={layoutOfMnemonic} spacing={10}>
+            <SimpleGrid columns={layoutOfMnemonic} spacing={layoutOfSpacing}>
               {words.map((word, index) => (
-                <Button key={index} colorScheme={type === 'to' ? "messenger" : "gray"} className="min-w-full" onClick={() => handleClickFn(index)}>
+                <Button size={createBtnSize} key={index} colorScheme={type === 'to' ? "messenger" : "twitter"} className="min-w-full" onClick={() => handleClickFn(index)}>
                   {word}
                 </Button>
               ))}
@@ -66,9 +67,7 @@ const CheckWord: React.FC<CheckWordProps> = ({ word, onFail, onSuccess }) => {
       <div className="flex flex-col items-center border border-gray-300 rounded-lg w-full p-4">
         {WordWrapper(randomWord, "from")}
         <div className="my-4">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 25" width="50" height="25">
-            <path d="M25,25 L0,0 L50,0 Z" fill="#d3d3d3" />
-          </svg>
+          <TbArrowsTransferDown size="1.4rem" color="gray" />
         </div>
         {WordWrapper(selectedWord, "to")}
       </div>

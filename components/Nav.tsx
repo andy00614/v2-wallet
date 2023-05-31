@@ -68,6 +68,7 @@ const Nav = () => {
     router.push(`/account/${TokenManager.getInstance().getPublicKey()}`)
   }
 
+  console.log(isAuthenticated)
   return (
     <nav className='flex-between w-full mb-16 pt-3'>
       <Link href='/' className='flex gap-2 flex-center'>
@@ -78,17 +79,9 @@ const Nav = () => {
           height={30}
           className='object-contain'
         />
-        {/* <h1 className="text-2xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-          Dynasty-Wallet
-        </h1> */}
-
         <h1 className="text-xl md:text-2xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
           Dynasty-Wallet
         </h1>
-
-        {/* <h1 className="text-2xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-green-500">
-          Dynasty-Wallet
-        </h1> */}
       </Link>
 
       {/* Desktop Navigation */}
@@ -107,23 +100,18 @@ const Nav = () => {
           <Menu>
             <MenuButton as={IconButton} icon={<HamburgerIcon />} />
             <MenuList>
-              {!pathName.includes('/account') && <MenuItem onClick={gotoWallet}>Go to Wallet</MenuItem>}
+              {!isAuthenticated && <MenuItem onClick={handleCreate}>Create account</MenuItem>}
+              {isAuthenticated && !pathName.includes('/account') && <MenuItem onClick={gotoWallet}>Go to Wallet</MenuItem>}
               {pathName !== '/import' && <MenuItem onClick={handleImport}>Import account</MenuItem>}
-              <MenuItem onClick={logout}>Log out</MenuItem>
+              {isAuthenticated && <MenuItem onClick={logout}>Log out</MenuItem>}
             </MenuList>
           </Menu>
           {isAuthenticated &&
-            <Image
-              src="/vv.png"
-              width={36}
-              height={36}
-              style={{ width: 36, height: 36, borderRadius: '50%' }}
-              alt='profile'
-              quality={100}
-            />
+            <Avatar logout={logout} />
           }
         </div>
       </div>
+
     </nav>
   );
 };

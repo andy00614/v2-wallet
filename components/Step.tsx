@@ -3,10 +3,14 @@ import { steps } from "@/config/step"
 import { Box, Step, StepDescription, StepIcon, StepIndicator, StepNumber, StepSeparator, StepStatus, StepTitle, Stepper, useSteps } from "@chakra-ui/react"
 
 
+import { useBreakpointValue } from "@chakra-ui/react";
+
 function CreateStep({ activeStep, className }: { activeStep: number, className?: string }) {
+  const orientation = useBreakpointValue({ base: "vertical", md: "horizontal" });
 
   return (
-    <Stepper index={activeStep} className={className}>
+    // @ts-ignore
+    <Stepper index={activeStep} className={className} orientation={orientation}>
       {steps.map((step, index) => (
         <Step key={index}>
           <StepIndicator>
@@ -30,3 +34,4 @@ function CreateStep({ activeStep, className }: { activeStep: number, className?:
 }
 
 export default CreateStep
+

@@ -1,9 +1,10 @@
 'use client'
 import React, { useContext, useState } from 'react';
-import { Box, Button, Input, VStack, Tag, TagLabel, TagCloseButton, Stack, useToast, Heading, Flex, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Button, Input, VStack, Tag, TagLabel, TagCloseButton, Stack, useToast, Heading, Flex, Text, useBreakpointValue, IconButton } from '@chakra-ui/react';
 import { getEkeyFromMnemonic, getEkeyFromPrivateKey, mnemonic2PublickKey, privateKey2PublickKey } from '@/request';
 import { AuthContext } from '@/app/auth-provider';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 const WalletImportPage = () => {
   const [privateKey, setPrivateKey] = useState('');
@@ -93,7 +94,9 @@ const WalletImportPage = () => {
 
   return (
     <VStack spacing={spacing} align="stretch" padding={padding}>
-      <Heading as="h1" size="xl" textAlign="center" mb={spacing} color="teal.500">Login Page</Heading>
+      <Header>
+        Import account
+      </Header>
       <Box>
         <Text fontSize="lg" mb={4} color="gray.700">Login with Private Key</Text>
         <Input

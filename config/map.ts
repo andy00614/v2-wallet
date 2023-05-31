@@ -11,3 +11,5 @@ export const statusColorMap: Record<string, string> = {
 }
 
 export const layoutOfMnemonic = { base: 3, sm: 3, md: 4, lg: 4 }
+export const layoutOfSpacing = { base: 5, sm: 5, md: 5, lg: 5 }
+export const createBtnSize = ["xs", "md"]

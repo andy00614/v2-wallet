@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Box, Button, Input, VStack, Heading, Select, Flex, useToast, InputGroup, Stack, FormControl, FormLabel, IconButton } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 const TransferFundsPage: React.FC = () => {
   const [currency, setCurrency] = useState('BNB');
@@ -25,18 +26,7 @@ const TransferFundsPage: React.FC = () => {
 
   return (
     <VStack spacing={4} align="stretch">
-      <Flex justify="space-between" align="center" mb={4}>
-        <IconButton
-          aria-label="Go back"
-          icon={<ArrowBackIcon />}
-          onClick={() => router.back()}
-          colorScheme="gray"
-          variant="outline"
-          isRound
-        />
-        <Heading as="h1" size="lg">Transfer Funds</Heading>
-        <Box w="50px" />  {/* This is to keep the layout balanced */}
-      </Flex>
+      <Header>Transfer Funds</Header>
       <Box>
         <FormControl id="address">
           <FormLabel>Recipient's Address</FormLabel>

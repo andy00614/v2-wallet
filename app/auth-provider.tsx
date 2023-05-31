@@ -37,6 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     tokenManager.removeToken()
     tokenManager.removePublicKey()
     setIsAuthenticated(false)
+    router.push('/')
   }
 
   useEffect(() => {
