@@ -63,7 +63,7 @@ function Create({ address }: IProps) {
         <Col numColSpan={2} numColSpanSm={2} className='flex gap-6 mb-2'>
           <FunctionalIcon text='Import token' TypeIcon={AddIcon} onClick={() => router.push('/import')} />
           <FunctionalIcon text='Transfer Funds' TypeIcon={BiTransfer} onClick={() => router.push('/transfer')} />
-          <FunctionalIcon text='Play Games' TypeIcon={IoGameControllerOutline} />
+          <FunctionalIcon text='Play Games' TypeIcon={IoGameControllerOutline} onClick={() => router.push('/game')} />
         </Col>
 
         <Col numColSpan={2} numColSpanLg={2}>
