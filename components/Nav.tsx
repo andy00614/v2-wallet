@@ -62,7 +62,8 @@ const Nav = () => {
   }
 
   const handleImport = () => {
-    onOpen()
+    router.push('/import')
+    // onOpen()
   }
 
   const handleConfirm = async () => {

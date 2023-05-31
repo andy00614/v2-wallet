@@ -33,7 +33,7 @@ export const getMnemonic = async () => {
   return res
 }
 
-export const getEkey = async (key: string[]) => {
+export const getEkeyFromMnemonic = async (key: string[]) => {
   const encryptKey = await encrypt(JSON.stringify(key))
   const { data } = await request<{ data: string }>('/blockchain/encryptKey', 'POST', { "paramTypeEnum": "MNEMONIC", mnemonic: encryptKey })
   const decryptEkey = await decrypt(data as any as string)
@@ -45,6 +45,13 @@ export const privateKey2PublickKey = async (privateKey: string) => {
   const { data } = await request<{ data: string }>('/blockchain/address', 'POST', { paramTypeEnum: 'PRIVATE_KEY', privateKey: privateKeyEncrypt })
   return data
 }
+export const mnemonic2PublickKey = async (key: string[]) => {
+  const encryptKey = await encrypt(JSON.stringify(key))
+  const { data } = await request<{ data: string }>('/blockchain/address', 'POST', { paramTypeEnum: 'MNEMONIC', mnemonic: encryptKey })
+  return data
+}
+
+
 
 export const getEkeyFromPrivateKey = async (privateKey: string) => {
   const privateKeyEncrypt = await encrypt(privateKey)

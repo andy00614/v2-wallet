@@ -4,7 +4,7 @@ import PasswordSetter from "@/components/SetPassword"
 import CreateStep from "@/components/Step"
 import { layoutOfMnemonic } from "@/config/map"
 import { steps } from "@/config/step"
-import { getEkey, getMnemonic, getPublicKey } from "@/request"
+import { getEkeyFromMnemonic, getMnemonic, getPublicKey } from "@/request"
 import { authorizationKey } from "@/utils/route"
 import { Button, Card, CardBody, Center, Heading, SimpleGrid, Text, useSteps, useToast } from "@chakra-ui/react"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -47,9 +47,9 @@ function Create() {
 
   const generatorAddress = useCallback(async () => {
     const mnemonic = await getMnemonic()
-    const eKey = await getEkey(mnemonic);
+    const eKey = await getEkeyFromMnemonic(mnemonic);
     const publicKey = await getPublicKey(mnemonic);
-    setMnemonic(mnemonic.slice(0, 2))
+    setMnemonic(mnemonic)
     setPublicKey(publicKey)
     setEkey(eKey)
   }, [])

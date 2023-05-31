@@ -9,6 +9,7 @@ import { AddIcon } from '@chakra-ui/icons'
 import FunctionalIcon from '@/components/FunctionalIcon'
 import { BiTransfer } from 'react-icons/bi'
 import { IoGameControllerOutline } from 'react-icons/io5'
+import { useRouter } from 'next/navigation'
 
 
 interface IProps {
@@ -16,6 +17,7 @@ interface IProps {
 }
 
 function Create({ address }: IProps) {
+  const router = useRouter()
   const publicKey = address[0]
   const [data, setData] = useState<Partial<Wallet>>({})
   const [records, setRecords] = useState<any[]>([])
@@ -60,7 +62,7 @@ function Create({ address }: IProps) {
 
         <Col numColSpan={2} numColSpanSm={2} className='flex gap-6 mb-2'>
           <FunctionalIcon text='Import token' TypeIcon={AddIcon} />
-          <FunctionalIcon text='Transfer Funds' TypeIcon={BiTransfer} />
+          <FunctionalIcon text='Transfer Funds' TypeIcon={BiTransfer} onClick={() => router.push('/transfer')} />
           <FunctionalIcon text='Play Games' TypeIcon={IoGameControllerOutline} />
         </Col>
 
