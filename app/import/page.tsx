@@ -1,6 +1,6 @@
 'use client'
 import React, { useContext, useState } from 'react';
-import { Box, Button, Input, VStack, Tag, TagLabel, TagCloseButton, Stack, useToast, Heading, Flex } from '@chakra-ui/react';
+import { Box, Button, Input, VStack, Tag, TagLabel, TagCloseButton, Stack, useToast, Heading, Flex, Text, useBreakpointValue } from '@chakra-ui/react';
 import { getEkeyFromMnemonic, getEkeyFromPrivateKey, mnemonic2PublickKey, privateKey2PublickKey } from '@/request';
 import { AuthContext } from '@/app/auth-provider';
 import { useRouter } from 'next/navigation';
@@ -88,38 +88,80 @@ const WalletImportPage = () => {
     })
   };
 
+  const padding = useBreakpointValue({ base: 4, md: 8 });
+  const spacing = useBreakpointValue({ base: 6, md: 8 });
+
   return (
-    <VStack spacing={4} align="stretch">
-      <Heading as="h1" size="lg" textAlign="center" mb={4}>Login Page</Heading>
+    <VStack spacing={spacing} align="stretch" padding={padding}>
+      <Heading as="h1" size="xl" textAlign="center" mb={spacing} color="teal.500">Login Page</Heading>
       <Box>
+        <Text fontSize="lg" mb={4} color="gray.700">Login with Private Key</Text>
         <Input
           placeholder="Enter your private key"
           value={privateKey}
           onChange={(e) => setPrivateKey(e.target.value)}
-          mb={2}
+          mb={4}
+          size="md"
         />
-        <Button onClick={() => onPrivateKeyLogin(privateKey)}>Login with Private Key</Button>
+        <Button colorScheme="teal" size="md" onClick={() => onPrivateKeyLogin(privateKey)}>Login</Button>
       </Box>
       <Box>
+        <Text fontSize="lg" mb={4} color="gray.700">Login with Mnemonic</Text>
         <Input
           placeholder="Enter your mnemonic"
           value={mnemonicInput}
           onChange={(e) => setMnemonicInput(e.target.value)}
           onKeyDown={handleMnemonicKeyDown}
-          mb={2}
+          mb={4}
+          size="md"
         />
-        <Flex wrap="wrap" mb={2}>
+        <Flex wrap="wrap" mb={4}>
           {mnemonic.map((m, index) => (
-            <Tag key={index} size="lg" variant="solid" colorScheme="teal" m={1}>
+            <Tag key={index} size="md" variant="solid" colorScheme="teal" m={2}>
               <TagLabel>{m}</TagLabel>
               <TagCloseButton onClick={() => handleMnemonicRemove(m)} />
             </Tag>
           ))}
         </Flex>
-        <Button onClick={() => onMnemonicLogin(mnemonic)}>Login with Mnemonic</Button>
+        <Button colorScheme="teal" size="md" onClick={() => onMnemonicLogin(mnemonic)}>Login</Button>
       </Box>
     </VStack>
   );
+
+  // return (
+  //   <VStack spacing={4} align="stretch">
+  //     <Heading as="h1" size="lg" textAlign="center" mb={4}>Login Page</Heading>
+  //     <Box>
+  //       <Input
+  //         placeholder="Enter your private key"
+  //         value={privateKey}
+  //         onChange={(e) => setPrivateKey(e.target.value)}
+  //         mb={2}
+  //       />
+  //       <Button onClick={() => onPrivateKeyLogin(privateKey)}>Login with Private Key</Button>
+  //     </Box>
+  //     <Box>
+  //       <Input
+  //         placeholder="Enter your mnemonic"
+  //         value={mnemonicInput}
+  //         onChange={(e) => setMnemonicInput(e.target.value)}
+  //         onKeyDown={handleMnemonicKeyDown}
+  //         mb={2}
+  //       />
+  //       <Flex wrap="wrap" mb={2}>
+  //         {mnemonic.map((m, index) => (
+  //           <Tag key={index} size="lg" variant="solid" colorScheme="teal" m={1}>
+  //             <TagLabel>{m}</TagLabel>
+  //             <TagCloseButton onClick={() => handleMnemonicRemove(m)} />
+  //           </Tag>
+  //         ))}
+  //       </Flex>
+  //       <Button onClick={() => onMnemonicLogin(mnemonic)}>Login with Mnemonic</Button>
+  //     </Box>
+  //   </VStack>
+
+
+  // );
 };
 
 export default WalletImportPage;

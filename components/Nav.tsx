@@ -2,24 +2,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from 'next/navigation';
-import { Button, Input, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure, useToast } from "@chakra-ui/react";
-import { useContext, useRef } from "react";
-import { getEkeyFromPrivateKey, privateKey2PublickKey } from "@/request";
+import { Button, Menu, MenuButton, MenuItem, MenuList, IconButton, Text, Box } from "@chakra-ui/react";
+import { HamburgerIcon } from '@chakra-ui/icons';
+import { useContext } from "react";
 import { TokenManager } from "@/utils/storage";
 import { isAuthorizationPage } from "@/utils/route";
 import { AuthContext } from "@/app/auth-provider";
 
-const AV = () => {
-  return <Image
-    src="/vv.png"
-    width={36}
-    height={36}
-    style={{ width: 36, height: 36, borderRadius: '50%' }}
-    alt='profile'
-    quality={100}
-  />
-}
-
+// Avatar component
 const Avatar = ({ logout }: { logout?: () => void }) => {
   const router = useRouter();
   const handleLogout = () => {
@@ -31,7 +21,14 @@ const Avatar = ({ logout }: { logout?: () => void }) => {
   }
   return <Menu>
     <MenuButton as='button'>
-      <AV />
+      <Image
+        src="/vv.png"
+        width={36}
+        height={36}
+        style={{ width: 36, height: 36, borderRadius: '50%' }}
+        alt='profile'
+        quality={100}
+      />
     </MenuButton>
     <MenuList>
       <MenuItem minH='48px' onClick={handleLogout}>
@@ -41,59 +38,36 @@ const Avatar = ({ logout }: { logout?: () => void }) => {
   </Menu>
 }
 
+// Navigation component
 const Nav = () => {
   const router = useRouter();
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const toast = useToast()
   const pathName = usePathname()
   const { isAuthenticated, logout } = useContext(AuthContext);
 
-  const handleCreate = (e: any) => {
-    e.preventDefault();
+  const handleNavigation = (path: string) => {
     if (isAuthorizationPage(pathName)) {
       let path = window.location.pathname; // "/authorization"
       let queryString = window.location.search;
       const redirectUrl = encodeURIComponent(`${path}${queryString}`);
-      router.push(`/create?redirectUrl=${redirectUrl}`);
+      router.push(`${path}?redirectUrl=${redirectUrl}`);
     } else {
-      router.push('/create');
+      router.push(path);
     }
+  }
+
+  const handleCreate = (e: any) => {
+    e.preventDefault();
+    handleNavigation('/create');
   }
 
   const handleImport = () => {
-    router.push('/import')
-    // onOpen()
+    handleNavigation('/import');
   }
 
-  const handleConfirm = async () => {
-    try {
-      const privateKey = inputRef.current?.value
-      if (!privateKey) {
-        toast({
-          title: 'please input private key',
-          status: 'warning',
-          duration: 2000,
-        })
-        return;
-      }
-      const [publicKey, eKey] = await Promise.all([
-        await privateKey2PublickKey(privateKey),
-        await getEkeyFromPrivateKey(privateKey)
-      ])
-      onClose()
-      TokenManager.getInstance().setToken(eKey)
-      router.push(`/account/${publicKey}`)
-    } catch (e: any) {
-      if (e?.response?.status === 403) {
-        toast({
-          title: 'private key is invalid',
-          status: 'error',
-          duration: 2000,
-        })
-      }
-    }
+  const gotoWallet = () => {
+    router.push(`/account/${TokenManager.getInstance().getPublicKey()}`)
   }
+
   return (
     <nav className='flex-between w-full mb-16 pt-3'>
       <Link href='/' className='flex gap-2 flex-center'>
@@ -104,41 +78,52 @@ const Nav = () => {
           height={30}
           className='object-contain'
         />
-        <p className='logo_text'>Dynasty-Wallet</p>
+        {/* <h1 className="text-2xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
+          Dynasty-Wallet
+        </h1> */}
+
+        <h1 className="text-xl md:text-2xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
+          Dynasty-Wallet
+        </h1>
+
+        {/* <h1 className="text-2xl ml-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-green-500">
+          Dynasty-Wallet
+        </h1> */}
       </Link>
 
       {/* Desktop Navigation */}
       <div className='sm:flex hidden'>
         <div className='flex gap-3 md:gap-5 flex-center'>
           {!isAuthenticated && <Button onClick={handleCreate} colorScheme="purple" size="sm">Create account</Button>}
-          <Button variant='outline' colorScheme="purple" size="sm" onClick={handleImport}>Import account</Button>
+          {isAuthenticated && !pathName.includes('/account') && <Button onClick={gotoWallet} colorScheme="purple" size="sm">Go to Wallet</Button>}
+          {pathName !== '/import' && <Button variant='outline' colorScheme="purple" size="sm" onClick={handleImport}>Import account</Button>}
           {isAuthenticated && <Avatar logout={logout} />}
         </div>
       </div>
 
       {/* Mobile Navigation */}
       <div className='sm:hidden flex relative'>
-        <div className='flex'>
-          {isAuthenticated && <Avatar logout={logout} />}
+        <div className='flex gap-4'>
+          <Menu>
+            <MenuButton as={IconButton} icon={<HamburgerIcon />} />
+            <MenuList>
+              {!pathName.includes('/account') && <MenuItem onClick={gotoWallet}>Go to Wallet</MenuItem>}
+              {pathName !== '/import' && <MenuItem onClick={handleImport}>Import account</MenuItem>}
+              <MenuItem onClick={logout}>Log out</MenuItem>
+            </MenuList>
+          </Menu>
+          {isAuthenticated &&
+            <Image
+              src="/vv.png"
+              width={36}
+              height={36}
+              style={{ width: 36, height: 36, borderRadius: '50%' }}
+              alt='profile'
+              quality={100}
+            />
+          }
         </div>
       </div>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Import account</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input ref={inputRef} placeholder='Enter your private key string here:' />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme='blue' variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme='blue' size="md" onClick={handleConfirm}>Import</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </nav>
   );
 };
