@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Button, Input, VStack, Heading, Select, Flex, useToast, InputGroup, Stack, FormControl, FormLabel, IconButton } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
@@ -11,6 +11,7 @@ const TransferFundsPage: React.FC = () => {
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [symbols, setSymbols] = useState<string[]>(['BNB']);
+  const symbolMap = useRef<Record<string, string | number>>({})
 
   const toast = useToast();
   const router = useRouter();
@@ -18,6 +19,10 @@ const TransferFundsPage: React.FC = () => {
   useEffect(() => {
     const getCoinsSymbol = async () => {
       const data = await getAddress()
+      symbolMap.current = {
+        'BNB': data.bnbBalance,
+        ...data.otherCoin
+      }
       const coinsSymbol = ['BNB', ...Object.keys(data.otherCoin)]
       setSymbols(coinsSymbol)
     }
@@ -55,11 +60,9 @@ const TransferFundsPage: React.FC = () => {
             <Select bg="white" value={currency} onChange={(e) => setCurrency(e.target.value)}>
               {
                 symbols.map((symbol) => {
-                  return <option key={symbol} value={symbol}>{symbol}</option>
+                  return <option key={symbol} value={symbol}>{symbol}({symbolMap.current[symbol] || 0})</option>
                 })
               }
-              {/* <option value="BNB">BNB</option>
-              <option value="WDT">WDT</option> */}
             </Select>
           </FormControl>
           <FormControl id="amount">

@@ -1,5 +1,5 @@
 'use client'
-import { statusMap, statusColorMap } from '@/config/map'
+import { statusMap, statusColorMap, typeMap } from '@/config/map'
 import { Wallet, getAddress, getOperationRecord } from '@/request'
 import { TokenManager } from '@/utils/storage'
 import { useToast } from '@chakra-ui/react'
@@ -131,8 +131,12 @@ function Create({ address }: IProps) {
             <Table className="mt-5">
               <TableHead>
                 <TableRow>
+                  <TableHeaderCell>Create Time</TableHeaderCell>
+                  <TableHeaderCell>Type</TableHeaderCell>
                   <TableHeaderCell>Amount</TableHeaderCell>
-                  <TableHeaderCell>Time</TableHeaderCell>
+                  <TableHeaderCell>From address</TableHeaderCell>
+                  <TableHeaderCell>To address</TableHeaderCell>
+                  <TableHeaderCell>Symbol</TableHeaderCell>
                   <TableHeaderCell>Status</TableHeaderCell>
                   <TableHeaderCell>Log</TableHeaderCell>
                 </TableRow>
@@ -141,10 +145,14 @@ function Create({ address }: IProps) {
                 {records.map((item) => {
                   return (
                     <TableRow key={item.amount}>
-                      <TableCell>{item.amount}</TableCell>
                       <TableCell>
                         <Text>{item.createTime}</Text>
                       </TableCell>
+                      <TableCell>{typeMap[String(item.type)]}</TableCell>
+                      <TableCell>{item.amount}</TableCell>
+                      <TableCell>{item.fromAddress}</TableCell>
+                      <TableCell>{item.toAddress}</TableCell>
+                      <TableCell>{item.symbol}</TableCell>
                       <TableCell>
                         {/* @ts-ignore */}
                         <Badge color={statusColorMap[item.status]}>
