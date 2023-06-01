@@ -23,15 +23,13 @@ function Create({ address }: IProps) {
   const [records, setRecords] = useState<any[]>([])
   const toast = useToast()
   const updateData = async () => {
-    // const [data, recordsData] = await Promise.all(
-    //   [
-    //     getAddress(publicKey),
-    //     getOperationRecord(publicKey)
-    //   ]
-    // )
-    const data = await getAddress(publicKey)
+    const [data, recordsData] = await Promise.all(
+      [
+        getAddress(),
+        getOperationRecord(publicKey)
+      ]
+    )
     setData(data)
-    const recordsData = await getOperationRecord(publicKey)
     setRecords(recordsData)
   }
   const toaster = useToast()
@@ -66,12 +64,18 @@ function Create({ address }: IProps) {
         updateData()
       }
     };
+    let timer = setInterval(() => {
+      if (!document.hidden) {
+        updateData()
+      }
+    }, 5000)
     if (publicKey) {
       updateData()
       document.addEventListener('visibilitychange', handleVisibilityChange);
     }
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(timer)
     };
   }, [])
 
