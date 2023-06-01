@@ -4,7 +4,7 @@ import { Wallet, getAddress, getOperationRecord } from '@/request'
 import { TokenManager } from '@/utils/storage'
 import { useToast } from '@chakra-ui/react'
 import { Badge, Card, Col, Grid, Metric, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text, Title } from '@tremor/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AddIcon } from '@chakra-ui/icons'
 import FunctionalIcon from '@/components/FunctionalIcon'
 import { BiTransfer } from 'react-icons/bi'
@@ -56,12 +56,25 @@ function Create({ address }: IProps) {
     };
   }, [])
 
+
+  console.log(1111, data)
+  const coins = useMemo(() => {
+    const otherCoins = Object.keys(data?.otherCoin || {}).map(key => ({ key, value: data.otherCoin?.[key] || 0 }))
+    return [
+      {
+        key: 'BNB',
+        value: data.bnbBalance
+      },
+      ...otherCoins
+    ]
+  }, [data])
+
   return (
     <div className='create-wrapper w-full'>
       <Grid numCols={1} numColsSm={2} numColsLg={2} className="gap-2">
 
         <Col numColSpan={2} numColSpanSm={2} className='flex gap-6 mb-2'>
-          <FunctionalIcon text='Import token' TypeIcon={AddIcon} onClick={() => router.push('/import')} />
+          <FunctionalIcon text='Import token' TypeIcon={AddIcon} onClick={() => router.push('/addToken')} />
           <FunctionalIcon text='Transfer Funds' TypeIcon={BiTransfer} onClick={() => router.push('/transfer')} />
           <FunctionalIcon text='Play Games' TypeIcon={IoGameControllerOutline} onClick={() => router.push('/game')} />
         </Col>
@@ -73,19 +86,22 @@ function Create({ address }: IProps) {
           </Card>
         </Col>
 
-        <Col numColSpan={2} numColSpanSm={1}>
-          <Card>
-            <Text>BNB</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{data.bnbBalance}</Metric>
-          </Card>
-        </Col>
+        {
+          coins.map((item, index) => {
+            const isLastItem = index === coins.length - 1;
+            const colSpanValue = (isLastItem && coins.length % 2 !== 0) ? 2 : 1;
 
-        <Col numColSpan={2} numColSpanSm={1}>
-          <Card>
-            <Text>WDT</Text>
-            <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{data.balance}</Metric>
-          </Card>
-        </Col>
+            return (
+              <Col key={item.key} numColSpan={2} numColSpanSm={colSpanValue}>
+                <Card>
+                  <Text>{item.key}</Text>
+                  <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{item.value}</Metric>
+                </Card>
+              </Col>
+            )
+          })
+        }
+
 
         <Col numColSpan={2} numColSpanSm={2}>
           <Card>
@@ -105,7 +121,7 @@ function Create({ address }: IProps) {
                     <TableRow key={item.amount}>
                       <TableCell>{item.amount}</TableCell>
                       <TableCell>
-                        <Text>{item.updateTime}</Text>
+                        <Text>{item.createTime}</Text>
                       </TableCell>
                       <TableCell>
                         {/* @ts-ignore */}

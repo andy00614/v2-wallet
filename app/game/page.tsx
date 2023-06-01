@@ -1,11 +1,7 @@
 
 const games = [
-  { id: 1, name: "Game 1", date: "2021-01-01", category: "Strategy", img: "/game1.png" },
-  { id: 2, name: "Game 2", date: "2021-02-02", category: "Action", img: "/game2.png" },
-  { id: 3, name: "Game 3", date: "2021-03-03", category: "Puzzle", img: "/game3.jpeg" },
-  { id: 4, name: "Game 4", date: "2021-04-04", category: "Adventure", img: "/game1.png" },
-  { id: 5, name: "Game 5", date: "2021-05-05", category: "RPG", img: "/game2.png" },
-  { id: 6, name: "Game 6", date: "2021-06-06", category: "Strategy", img: "/game1.png" },
+  { id: 1, name: "Memory", date: "2023-06-01", category: "Puzzle", img: "/memory.png", url: 'http://8.219.157.52:5003/' },
+  { id: 3, name: "Game 3", date: "2013-09-17", category: "Open-world", img: "/game3.jpeg", url: 'https://www.rockstargames.com/gta-v' },
 ];
 
 import Link from 'next/link'
@@ -15,7 +11,7 @@ export default function GameList() {
     <div className="flex flex-wrap justify-around">
       {games.map((game) => (
         <div key={game.id} className="m-4 max-w-sm transform hover:scale-105 transition-transform duration-200 cursor-pointer">
-          <Link href={`/game/${game.id}`}>
+          <Link href={game.url}>
             <div className="overflow-hidden rounded-lg shadow-lg">
               <img className="w-full h-64 object-cover" src={game.img} alt={game.name} />
               <div className="bg-white rounded-b-lg px-6 py-4  transition-colors duration-200">

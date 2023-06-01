@@ -1,5 +1,6 @@
 export const statusMap: Record<string, string> = {
   '0': 'Pending',
+  '1': 'Pending',
   '2': 'Success',
   '-1': 'Fail'
 }

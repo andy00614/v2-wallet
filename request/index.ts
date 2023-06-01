@@ -3,12 +3,15 @@ import { request } from "./utils"
 
 export interface Wallet {
   id: number;
-  address: string;
-  balance: string;
-  bnbBalance: string;
-  userId: number | null;
-  optTime: string;
+  address: null | string;
+  bnbBalance: number;
+  otherCoin: {
+    [key: string]: number;
+  };
+  userId: null | string;
+  optTime: null | string;
 }
+
 
 export async function getAddress(address: string) {
   const { data } = await request<{ data: Wallet }>('/blockchain/wallet', 'GET', { address })
@@ -58,4 +61,9 @@ export const getEkeyFromPrivateKey = async (privateKey: string) => {
   const { data } = await request<{ data: string }>('/blockchain/encryptKey', 'POST', { paramTypeEnum: 'PRIVATE_KEY', privateKey: privateKeyEncrypt })
   const decryptEkey = await decrypt(data as any as string)
   return decryptEkey
+}
+
+export const addToken = async (address: string, symbol: string) => {
+  const { data } = await request<{ data: string }>('/blockchain/addCoinContract', 'POST', { address, symbol })
+  return data
 }
