@@ -35,13 +35,13 @@ function Create({ address }: IProps) {
   const toaster = useToast()
 
   const handleCopyAddress = () => {
+    navigator.clipboard.writeText(publicKey)
     toaster({
       title: 'Address Copied',
       status: 'success',
       duration: 2000,
       isClosable: true,
     })
-    navigator.clipboard.writeText(publicKey)
   }
 
   useEffect(() => {
