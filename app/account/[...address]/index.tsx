@@ -21,9 +21,17 @@ function Create({ address }: IProps) {
   const publicKey = address[0]
   const [data, setData] = useState<Partial<Wallet>>({})
   const [records, setRecords] = useState<any[]>([])
+  const toast = useToast()
   const updateData = async () => {
-    const [data, recordsData] = await Promise.all([getAddress(publicKey), getOperationRecord(publicKey)])
+    // const [data, recordsData] = await Promise.all(
+    //   [
+    //     getAddress(publicKey),
+    //     getOperationRecord(publicKey)
+    //   ]
+    // )
+    const data = await getAddress(publicKey)
     setData(data)
+    const recordsData = await getOperationRecord(publicKey)
     setRecords(recordsData)
   }
   const toaster = useToast()
@@ -39,6 +47,19 @@ function Create({ address }: IProps) {
   }
 
   useEffect(() => {
+    const cachePublicKey = TokenManager.getInstance().getPublicKey()
+    if (publicKey !== cachePublicKey) {
+      toast({
+        title: 'Invalid Address',
+        description: 'Please check your address',
+        status: 'error',
+        duration: 2000,
+      })
+      router.push(`/invalid`)
+    }
+  }, [publicKey])
+
+  useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         // 当页面从其他页面切换回来时，执行您的代码
@@ -48,8 +69,6 @@ function Create({ address }: IProps) {
     if (publicKey) {
       updateData()
       document.addEventListener('visibilitychange', handleVisibilityChange);
-      const tokenManager = TokenManager.getInstance()
-      tokenManager.setPublickKey(publicKey)
     }
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -57,7 +76,6 @@ function Create({ address }: IProps) {
   }, [])
 
 
-  console.log(1111, data)
   const coins = useMemo(() => {
     const otherCoins = Object.keys(data?.otherCoin || {}).map(key => ({ key, value: data.otherCoin?.[key] || 0 }))
     return [
@@ -95,7 +113,7 @@ function Create({ address }: IProps) {
               <Col key={item.key} numColSpan={2} numColSpanSm={colSpanValue}>
                 <Card>
                   <Text>{item.key}</Text>
-                  <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{item.value}</Metric>
+                  <Metric className='overflow-hidden overflow-ellipsis whitespace-nowrap'>{item.value || 0}</Metric>
                 </Card>
               </Col>
             )

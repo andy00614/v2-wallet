@@ -13,8 +13,8 @@ export interface Wallet {
 }
 
 
-export async function getAddress(address: string) {
-  const { data } = await request<{ data: Wallet }>('/blockchain/wallet', 'GET', { address })
+export async function getAddress() {
+  const { data } = await request<{ data: Wallet }>('/blockchain/wallet', 'GET')
   return data
 }
 
@@ -65,5 +65,10 @@ export const getEkeyFromPrivateKey = async (privateKey: string) => {
 
 export const addToken = async (address: string, symbol: string) => {
   const { data } = await request<{ data: string }>('/blockchain/addCoinContract', 'POST', { address, symbol })
+  return data
+}
+
+export const transferCoin = async (toAddress: string, symbol: string, amt: number | string) => {
+  const { data } = await request<{ data: string }>('/blockchain/transfer', 'POST', { toAddress, symbol, amt })
   return data
 }

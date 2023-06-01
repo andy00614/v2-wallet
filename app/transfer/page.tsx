@@ -1,20 +1,32 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Input, VStack, Heading, Select, Flex, useToast, InputGroup, Stack, FormControl, FormLabel, IconButton } from '@chakra-ui/react';
-import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
+import { getAddress, transferCoin } from '@/request';
+import { TokenManager } from '@/utils/storage';
 
 const TransferFundsPage: React.FC = () => {
   const [currency, setCurrency] = useState('BNB');
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
+  const [symbols, setSymbols] = useState<string[]>(['BNB']);
 
   const toast = useToast();
   const router = useRouter();
 
-  const handleTransfer = () => {
+  useEffect(() => {
+    const getCoinsSymbol = async () => {
+      const data = await getAddress()
+      const coinsSymbol = ['BNB', ...Object.keys(data.otherCoin)]
+      setSymbols(coinsSymbol)
+    }
+    getCoinsSymbol()
+  }, [])
+
+  const handleTransfer = async () => {
     // Your transfer function here
+    await transferCoin(address, currency, amount)
     toast({
       title: "Transfer Successful",
       description: `Transferred ${amount} ${currency} to ${address}`,
@@ -22,6 +34,7 @@ const TransferFundsPage: React.FC = () => {
       duration: 3000,
       isClosable: true,
     });
+    router.push(`/account/${TokenManager.getInstance().getPublicKey()}`)
   };
 
   return (
@@ -40,8 +53,13 @@ const TransferFundsPage: React.FC = () => {
           <FormControl id="currency">
             <FormLabel>Currency</FormLabel>
             <Select bg="white" value={currency} onChange={(e) => setCurrency(e.target.value)}>
-              <option value="BNB">BNB</option>
-              <option value="WDT">WDT</option>
+              {
+                symbols.map((symbol) => {
+                  return <option key={symbol} value={symbol}>{symbol}</option>
+                })
+              }
+              {/* <option value="BNB">BNB</option>
+              <option value="WDT">WDT</option> */}
             </Select>
           </FormControl>
           <FormControl id="amount">

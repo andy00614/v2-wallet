@@ -4,6 +4,7 @@ import { Box, Input, Button, FormControl, FormLabel, useToast } from "@chakra-ui
 import { addToken } from '@/request';
 import { useRouter } from 'next/navigation';
 import { TokenManager } from '@/utils/storage';
+import Header from '@/components/Header';
 
 export default function AddTokenForm() {
   const [address, setAddress] = useState('');
@@ -16,7 +17,7 @@ export default function AddTokenForm() {
 
     // 你的请求逻辑，例如发送给后端服务器
     try {
-      const response = await addToken(address, symbol);
+      await addToken(address, symbol);
       toast({
         title: 'add token success',
         status: 'success',
@@ -30,6 +31,7 @@ export default function AddTokenForm() {
 
   return (
     <Box as="form" onSubmit={handleSubmit} mt={10}>
+      <Header>Import token</Header>
       <FormControl isRequired>
         <FormLabel htmlFor="address">Token Contract Address</FormLabel>
         <Input type="text" id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
