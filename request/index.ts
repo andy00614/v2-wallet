@@ -72,3 +72,9 @@ export const transferCoin = async (toAddress: string, symbol: string, amt: numbe
   const { data } = await request<{ data: string }>('/blockchain/transfer', 'POST', { toAddress, symbol, amt })
   return data
 }
+
+export const getTransferGasFee = async ({ amt, symbol, toAddress, ekey }: { amt: number | string, symbol: string, toAddress: string, ekey: string }) => {
+  const encryptKey = await encrypt(ekey)
+  const { data } = await request<{ data: string }>('/blockchain/obtainTransferGasFee', 'POST', { amt, symbol, toAddress, ekey })
+  return data
+}

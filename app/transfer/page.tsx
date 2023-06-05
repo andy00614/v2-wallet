@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, Input, VStack, Heading, Select, Flex, useToast, InputGroup, Stack, FormControl, FormLabel, IconButton } from '@chakra-ui/react';
+import { Box, Button, Input, VStack, Select, useToast, FormControl, FormLabel, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, Stack } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
-import { getAddress, transferCoin } from '@/request';
+import { getAddress, transferCoin, getTransferGasFee } from '@/request';
 import { TokenManager } from '@/utils/storage';
 
 const TransferFundsPage: React.FC = () => {
@@ -11,7 +11,11 @@ const TransferFundsPage: React.FC = () => {
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [symbols, setSymbols] = useState<string[]>(['BNB']);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [transferGasFee, setTransferGasFee] = useState<string | null | number>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const symbolMap = useRef<Record<string, string | number>>({})
+  const cancelRef = React.useRef<any>();
 
   const toast = useToast();
   const router = useRouter();
@@ -29,8 +33,17 @@ const TransferFundsPage: React.FC = () => {
     getCoinsSymbol()
   }, [])
 
+  const handleTransferConfirm = async () => {
+    setIsLoading(true);
+    const gasFee = await getTransferGasFee({ amt: amount, symbol: currency, toAddress: address, ekey: TokenManager.getInstance().getToken() as string });
+    setTransferGasFee(gasFee);
+    setIsAlertOpen(true);
+    setIsLoading(false);
+  }
+
   const handleTransfer = async () => {
-    // Your transfer function here
+    setIsLoading(true);
+    setIsAlertOpen(false);
     await transferCoin(address, currency, amount)
     toast({
       title: "Transfer Successful",
@@ -39,7 +52,7 @@ const TransferFundsPage: React.FC = () => {
       duration: 3000,
       isClosable: true,
     });
-    router.push(`/account/${TokenManager.getInstance().getPublicKey()}`)
+    setIsLoading(false);
   };
 
   return (
@@ -75,7 +88,33 @@ const TransferFundsPage: React.FC = () => {
             />
           </FormControl>
         </Stack>
-        <Button colorScheme="teal" onClick={handleTransfer} mt={4}>Transfer</Button>
+        <Button colorScheme="teal" isLoading={isLoading} onClick={handleTransferConfirm} mt={4}>Transfer</Button>
+        <AlertDialog
+          isOpen={isAlertOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={() => setIsAlertOpen(false)}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Transfer Confirmation
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                This operation will consume approximately {transferGasFee} gas fee. Do you wish to continue?
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={() => setIsAlertOpen(false)}>
+                  Cancel
+                </Button>
+                <Button colorScheme="red" onClick={handleTransfer} ml={3}>
+                  Continue
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
       </Box>
     </VStack>
   );
